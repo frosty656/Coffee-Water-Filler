@@ -62,14 +62,24 @@ void setup(){
   digitalWrite(coffee_relay, LOW);
   digitalWrite(espresso_relay, LOW);
 
+  // Fill th coffee machine before wifi connect so if failure at least that will fill
+  fill_machine(coffe_machine_water, coffee_relay);
+
   // Start to connect to wifi
   WiFi.begin(MySSID, MyWifiPassword);
 
   // Wait until we have joined a wifi network
   // Use . to show progress
+  int tries = 0;
   while ( WiFi.status() != WL_CONNECTED ) {
     delay ( 500 );
     Serial.print ( "." );
+
+    // After 50 trys just give up and try again later
+    if(tries > 50){
+      break;
+    }
+    tries++;
   }
 
   // Once we are conected we display connection information
@@ -83,8 +93,6 @@ void setup(){
 
   // Start the connection to the date time server
   timeClient.begin();
-
-  fill_machine(coffe_machine_water, coffee_relay);
 
   // Get the current date and time as unix timestamp (seconds from Jan 01 1970)
   timeClient.update();
@@ -101,5 +109,5 @@ void setup(){
 }
 
 void loop() {
-  
+  // Nothing here will run as deep sleep is called at the end of startup
 }
